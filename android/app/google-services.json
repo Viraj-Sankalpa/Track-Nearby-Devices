@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "8828017189",
+    "project_id": "tracex-a118f",
+    "storage_bucket": "tracex-a118f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8828017189:android:c7f51c469d57136d647dcc",
+        "android_client_info": {
+          "package_name": "com.example.blu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "8828017189-ue61fgtb7buebojrcg43s4u2cr5663t1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfHLAZmA2RIAxIrBX8Qb4-pplxoPItq5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "8828017189-ue61fgtb7buebojrcg43s4u2cr5663t1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
