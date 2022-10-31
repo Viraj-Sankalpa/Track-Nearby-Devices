@@ -1,48 +1,44 @@
+import 'package:blu/components/rounded_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
-import 'auth.dart';
+
 import 'components/contact_card.dart';
+import 'constants.dart';
 
 class NearbyInterface extends StatefulWidget {
-  const NearbyInterface({super.key});
+  static const String id = 'nearby_interface';
 
   @override
-  State<NearbyInterface> createState() => _NearbyInterfaceState();
+  _NearbyInterfaceState createState() => _NearbyInterfaceState();
 }
 
 class _NearbyInterfaceState extends State<NearbyInterface> {
   Location location = Location();
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Strategy strategy = Strategy.P2P_STAR;
-  late User loggedUser;
+  late User loggedInUser;
   String testText = '';
-
   final _auth = FirebaseAuth.instance;
   List<dynamic> contactTraces = [];
   List<dynamic> contactTimes = [];
   List<dynamic> contactLocations = [];
-
-  get kButtonTextStyle => null;
-
-  set cpf(cpf) {}
 
   void addContactsToList() async {
     await getCurrentUser();
 
     _firestore
         .collection('users')
-        .doc(loggedUser.email)
+        .doc(loggedInUser.email)
         .collection('met_with')
         .snapshots()
         .listen((snapshot) {
       for (var doc in snapshot.docs) {
-        String currUsername = doc.data()['username'];
+        // String currUsername = doc.data['username'];
+        String currUsername = doc['username'].data();
+
         DateTime? currTime = doc.data().containsKey('contact time')
             ? (doc.data()['contact time'] as Timestamp).toDate()
             : null;
@@ -57,7 +53,7 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
         }
       }
       setState(() {});
-      print(loggedUser.email);
+      print(loggedInUser.email);
     });
   }
 
@@ -67,17 +63,13 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
 
     _firestore
         .collection('users')
-        .doc(loggedUser.email)
+        .doc(loggedInUser.email)
         .collection('met_with')
         .snapshots()
         .listen((snapshot) {
       for (var doc in snapshot.docs) {
 //        print(doc.data.containsKey('contact time'));
-        // if (doc.data.containsKey('contact time'))
-        if (doc.data()!.containsKey('cpf')) {
-          cpf = doc['cpf'];
-        }
-        {
+        if (doc.data().containsKey('contact time')) {
           DateTime contactTime = (doc.data()['contact time'] as Timestamp)
               .toDate(); // get last contact time
           // if time since contact is greater than threshold than remove the contact
@@ -93,11 +85,12 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
 
   void discovery() async {
     try {
-      bool a = await Nearby().startDiscovery(loggedUser.email, strategy,
-          onEndpointFound: (id, name, serviceId) async {
+      bool a = await Nearby()
+          .startDiscovery(loggedInUser.email.toString(), strategy,
+              onEndpointFound: (id, name, serviceId) async {
         print('I saw id:$id with name:$name'); // the name here is an email
 
-        var docRef = _firestore.collection('users').doc(loggedUser.email);
+        var docRef = _firestore.collection('users').doc(loggedInUser.email);
 
         //  When I discover someone I will see their email and add that email to the database of my contacts
         //  also get the current time & location and add it to the database
@@ -119,7 +112,7 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
     Nearby().askLocationAndExternalStoragePermission();
   }
 
-  Future<String> getUsernameOfEmail({required String email}) async {
+  Future<String> getUsernameOfEmail({String? email}) async {
     String res = '';
     await _firestore.collection('users').doc(email).get().then((doc) {
       if (doc.exists) {
@@ -131,16 +124,19 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
     });
     return res;
   }
+  // currentUser()
 
   Future<void> getCurrentUser() async {
     try {
-      final user = await _auth.currentUser;
-      if (user != null) {
-        var loggedUser = user;
-      }
+      final user = await _auth.authStateChanges().listen((User? user) {
+        if (user != null) {
+          loggedInUser = user;
+        }
+      });
     } catch (e) {
       print(e);
     }
+    ;
   }
 
   @override
@@ -171,7 +167,7 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
         backgroundColor: Colors.white,
       ),
       body: Column(
-        children: <Widget>[
+        children: [
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(
@@ -197,10 +193,10 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
                   ],
                 ),
                 child: Row(
-                  children: <Widget>[
+                  children: [
                     Expanded(
                       child: Image(
-                        image: AssetImage('images/corona.png'),
+                        image: AssetImage('assets/images/corona.png'),
                       ),
                     ),
                     Expanded(
@@ -226,21 +222,19 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)),
               elevation: 5.0,
-              color: Colors.deepPurple,
+              color: Colors.black,
               onPressed: () async {
                 try {
                   bool a = await Nearby().startAdvertising(
-                    loggedUser.email,
+                    loggedInUser.email.toString(),
                     strategy,
-                    // onConnectionInitiated: null,
+                    onConnectionInitiated: null,
                     onConnectionResult: (id, status) {
                       print(status);
                     },
                     onDisconnected: (id) {
                       print('Disconnected $id');
                     },
-                    onConnectionInitiated:
-                        (String endpointId, ConnectionInfo connectionInfo) {},
                   );
 
                   print('ADVERTISING ${a.toString()}');
@@ -263,7 +257,7 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
               child: ListView.builder(
                 itemBuilder: (context, index) {
                   return ContactCard(
-                    imagePath: 'images/profile1.jpg',
+                    imagePath: 'assets/images/profile1.jpg',
                     email: contactTraces[index],
                     infection: 'Not-Infected',
                     contactUsername: contactTraces[index],
@@ -287,3 +281,15 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
       required Future<Null> Function() onPressed,
       required Text child}) {}
 }
+
+@override
+Widget build(Object context) {
+  // TODO: implement build
+  throw UnimplementedError();
+}
+  
+  
+
+// TODO: Take mobile number instead of email
+
+// TODO: Delete contacts older than 14 days from database

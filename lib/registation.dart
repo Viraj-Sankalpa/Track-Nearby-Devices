@@ -54,12 +54,14 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   height: 8.0,
                 ),
                 TextField(
+                  decoration: InputDecoration(hintText: "user name"),
                   textAlign: TextAlign.center,
                   onChanged: ((value) {
                     userName = value;
                   }),
                 ),
                 TextField(
+                  decoration: InputDecoration(hintText: "Email"),
                   textAlign: TextAlign.center,
                   onChanged: ((value) {
                     email = value;
@@ -69,7 +71,9 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   height: 8.0,
                 ),
                 TextField(
-                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(hintText: "Password"),
+                  // keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.visiblePassword,
                   textAlign: TextAlign.center,
                   onChanged: ((value) {
                     password = value;

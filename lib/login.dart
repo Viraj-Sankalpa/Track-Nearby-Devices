@@ -1,4 +1,5 @@
 import 'package:blu/components/rounded_button.dart';
+import 'package:blu/nearby_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -19,12 +20,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/bg1.jpg"),
-            fit: BoxFit.cover,
-          ),
-        ),
+        // decoration: BoxDecoration(
+        //   image: DecorationImage(
+        //     image: AssetImage("assets/images/bg1.jpg"),
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
         child: ModalProgressHUD(
           inAsyncCall: showSpinner,
           child: Padding(
@@ -34,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextField(
+                  decoration: InputDecoration(hintText: "Email"),
                   keyboardType: TextInputType.emailAddress,
                   textAlign: TextAlign.center,
                   onChanged: (value) {
@@ -44,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 8.0,
                 ),
                 TextField(
+                  decoration: InputDecoration(hintText: "Password"),
                   obscureText: true,
                   textAlign: TextAlign.center,
                   onChanged: (value) {
@@ -56,10 +59,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 RoundedButton(
                     colour: Colors.red,
                     title: "Log In",
-                    onPressed: () async* {
-                      setState(() {
-                        showSpinner = true;
-                      });
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NearbyInterface()));
+
+                      // setState(() {
+                      //   showSpinner = true;
+                      // });
                     })
               ],
             ),
