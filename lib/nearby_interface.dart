@@ -157,7 +157,7 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
         ),
         centerTitle: true,
         title: Text(
-          'TracerX',
+          'Covid 19 Self Assistance',
           style: TextStyle(
             color: Colors.deepPurple[800],
             fontWeight: FontWeight.bold,
@@ -218,11 +218,13 @@ class _NearbyInterfaceState extends State<NearbyInterface> {
           ),
           Padding(
             padding: EdgeInsets.only(bottom: 30.0),
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              elevation: 5.0,
-              color: Colors.black,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.deepPurple, // background
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
               onPressed: () async {
                 try {
                   bool a = await Nearby().startAdvertising(
