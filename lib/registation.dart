@@ -78,6 +78,8 @@ class _RegistationScreenState extends State<RegistationScreen> {
                   onChanged: ((value) {
                     password = value;
                   }),
+
+                  //test
                 ),
                 SizedBox(
                   height: 24.0,
